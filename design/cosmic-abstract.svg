@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <!-- Gradients -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0d0d2b"/>
+      <stop offset="100%" stop-color="#000008"/>
+    </radialGradient>
+    <radialGradient id="glowPurple" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#9b59b6" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#9b59b6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f9ca24" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f9ca24" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#9b59b6"/>
+      <stop offset="100%" stop-color="#f9ca24"/>
+    </linearGradient>
+    <linearGradient id="ringGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f9ca24"/>
+      <stop offset="50%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#9b59b6"/>
+    </linearGradient>
+    <filter id="blur4">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+    <filter id="blur12">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="blur20">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="800" fill="url(#bgGrad)"/>
+
+  <!-- Starfield -->
+  <g opacity="0.8">
+    <circle cx="42" cy="78" r="1" fill="white" opacity="0.9"/>
+    <circle cx="130" cy="210" r="1.5" fill="white" opacity="0.6"/>
+    <circle cx="220" cy="50" r="1" fill="white" opacity="0.8"/>
+    <circle cx="310" cy="140" r="1" fill="white" opacity="0.5"/>
+    <circle cx="450" cy="30" r="1.5" fill="white" opacity="0.9"/>
+    <circle cx="560" cy="120" r="1" fill="white" opacity="0.7"/>
+    <circle cx="670" cy="70" r="1" fill="white" opacity="0.8"/>
+    <circle cx="740" cy="200" r="1.5" fill="white" opacity="0.6"/>
+    <circle cx="90" cy="350" r="1" fill="white" opacity="0.7"/>
+    <circle cx="170" cy="480" r="1.5" fill="white" opacity="0.5"/>
+    <circle cx="60" cy="600" r="1" fill="white" opacity="0.8"/>
+    <circle cx="700" cy="350" r="1" fill="white" opacity="0.9"/>
+    <circle cx="760" cy="500" r="1.5" fill="white" opacity="0.6"/>
+    <circle cx="720" cy="650" r="1" fill="white" opacity="0.7"/>
+    <circle cx="640" cy="720" r="1" fill="white" opacity="0.5"/>
+    <circle cx="500" cy="760" r="1.5" fill="white" opacity="0.8"/>
+    <circle cx="350" cy="740" r="1" fill="white" opacity="0.6"/>
+    <circle cx="200" cy="700" r="1" fill="white" opacity="0.9"/>
+    <circle cx="100" cy="720" r="1.5" fill="white" opacity="0.5"/>
+    <circle cx="380" cy="180" r="1" fill="#00e5ff" opacity="0.8"/>
+    <circle cx="590" cy="390" r="1.5" fill="#9b59b6" opacity="0.8"/>
+    <circle cx="240" cy="580" r="1" fill="#f9ca24" opacity="0.8"/>
+  </g>
+
+  <!-- Background glow blobs -->
+  <ellipse cx="200" cy="300" rx="180" ry="180" fill="url(#glowPurple)" filter="url(#blur20)" opacity="0.5"/>
+  <ellipse cx="600" cy="500" rx="180" ry="180" fill="url(#glowCyan)" filter="url(#blur20)" opacity="0.4"/>
+  <ellipse cx="400" cy="400" rx="120" ry="120" fill="url(#glowGold)" filter="url(#blur20)" opacity="0.2"/>
+
+  <!-- Outer decorative rings (tilted ellipses) -->
+  <ellipse cx="400" cy="400" rx="320" ry="80" fill="none" stroke="url(#ringGrad1)" stroke-width="1.5" opacity="0.3" transform="rotate(-25 400 400)"/>
+  <ellipse cx="400" cy="400" rx="300" ry="70" fill="none" stroke="url(#ringGrad2)" stroke-width="1" opacity="0.2" transform="rotate(-25 400 400)"/>
+  <ellipse cx="400" cy="400" rx="340" ry="90" fill="none" stroke="#00e5ff" stroke-width="0.5" opacity="0.15" transform="rotate(-25 400 400)"/>
+
+  <ellipse cx="400" cy="400" rx="280" ry="100" fill="none" stroke="url(#ringGrad1)" stroke-width="1.5" opacity="0.3" transform="rotate(30 400 400)"/>
+  <ellipse cx="400" cy="400" rx="260" ry="90" fill="none" stroke="url(#ringGrad2)" stroke-width="1" opacity="0.2" transform="rotate(30 400 400)"/>
+
+  <!-- Geometric hexagon frame -->
+  <polygon points="400,130 620,265 620,535 400,670 180,535 180,265"
+    fill="none" stroke="url(#ringGrad1)" stroke-width="1.5" opacity="0.4"/>
+  <polygon points="400,155 600,280 600,520 400,645 200,520 200,280"
+    fill="none" stroke="#9b59b6" stroke-width="0.8" opacity="0.25"/>
+
+  <!-- Triangular sacred geometry -->
+  <polygon points="400,170 640,570 160,570"
+    fill="none" stroke="#00e5ff" stroke-width="1" opacity="0.3"/>
+  <polygon points="400,630 160,230 640,230"
+    fill="none" stroke="#f9ca24" stroke-width="1" opacity="0.25"/>
+
+  <!-- Inner circle rings -->
+  <circle cx="400" cy="400" r="200" fill="none" stroke="url(#ringGrad1)" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="400" cy="400" r="195" fill="none" stroke="#00e5ff" stroke-width="0.5" opacity="0.2"/>
+  <circle cx="400" cy="400" r="155" fill="none" stroke="url(#ringGrad2)" stroke-width="1" opacity="0.4"/>
+  <circle cx="400" cy="400" r="120" fill="none" stroke="#9b59b6" stroke-width="1.5" opacity="0.5"/>
+  <circle cx="400" cy="400" r="85" fill="none" stroke="#f9ca24" stroke-width="1" opacity="0.4"/>
+
+  <!-- Radial lines -->
+  <g stroke="#00e5ff" stroke-width="0.8" opacity="0.2">
+    <line x1="400" y1="200" x2="400" y2="50"/>
+    <line x1="400" y1="600" x2="400" y2="750"/>
+    <line x1="200" y1="400" x2="50" y2="400"/>
+    <line x1="600" y1="400" x2="750" y2="400"/>
+    <line x1="259" y1="259" x2="150" y2="150"/>
+    <line x1="541" y1="259" x2="650" y2="150"/>
+    <line x1="259" y1="541" x2="150" y2="650"/>
+    <line x1="541" y1="541" x2="650" y2="650"/>
+  </g>
+
+  <!-- Orbital dots on rings -->
+  <g filter="url(#glow)">
+    <!-- On outer ring -->
+    <circle cx="600" cy="400" r="5" fill="#00e5ff" opacity="0.9"/>
+    <circle cx="200" cy="400" r="4" fill="#9b59b6" opacity="0.9"/>
+    <circle cx="400" cy="200" r="5" fill="#f9ca24" opacity="0.9"/>
+    <circle cx="400" cy="600" r="4" fill="#00e5ff" opacity="0.8"/>
+    <!-- On mid ring -->
+    <circle cx="513" cy="287" r="4" fill="#f9ca24" opacity="0.8"/>
+    <circle cx="287" cy="513" r="4" fill="#9b59b6" opacity="0.8"/>
+    <circle cx="287" cy="287" r="3" fill="#00e5ff" opacity="0.7"/>
+    <circle cx="513" cy="513" r="3" fill="#f9ca24" opacity="0.7"/>
+  </g>
+
+  <!-- Core glow -->
+  <circle cx="400" cy="400" r="60" fill="#9b59b6" opacity="0.08" filter="url(#blur12)"/>
+  <circle cx="400" cy="400" r="40" fill="#00e5ff" opacity="0.12" filter="url(#blur12)"/>
+
+  <!-- Central star / burst -->
+  <g transform="translate(400,400)" filter="url(#glow)">
+    <!-- 8-pointed star -->
+    <polygon points="0,-50 8,-20 35,-35 20,-8 50,0 20,8 35,35 8,20 0,50 -8,20 -35,35 -20,8 -50,0 -20,-8 -35,-35 -8,-20"
+      fill="url(#ringGrad1)" opacity="0.9"/>
+    <!-- Inner star core -->
+    <polygon points="0,-24 4,-10 17,-17 10,-4 24,0 10,4 17,17 4,10 0,24 -4,10 -17,17 -10,4 -24,0 -10,-4 -17,-17 -4,-10"
+      fill="white" opacity="0.85"/>
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="8" fill="white" opacity="1"/>
+    <circle cx="0" cy="0" r="5" fill="#00e5ff" opacity="1"/>
+  </g>
+
+  <!-- Corner accent marks -->
+  <g stroke="#00e5ff" stroke-width="1.5" fill="none" opacity="0.5">
+    <path d="M 60,60 L 60,90 L 90,90"/>
+    <path d="M 740,60 L 740,90 L 710,90"/>
+    <path d="M 60,740 L 60,710 L 90,710"/>
+    <path d="M 740,740 L 740,710 L 710,710"/>
+  </g>
+
+  <!-- Text label -->
+  <text x="400" y="775" text-anchor="middle"
+    font-family="'Courier New', monospace" font-size="11"
+    fill="#00e5ff" opacity="0.5" letter-spacing="6">
+    COSMIC GEOMETRY
+  </text>
+</svg>
