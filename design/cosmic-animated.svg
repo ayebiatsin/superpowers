@@ -1,0 +1,331 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0d0d2b"/>
+      <stop offset="100%" stop-color="#000008"/>
+    </radialGradient>
+    <radialGradient id="glowPurple" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#9b59b6" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#9b59b6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowCyan" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowGold" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f9ca24" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f9ca24" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#9b59b6"/>
+      <stop offset="100%" stop-color="#f9ca24"/>
+    </linearGradient>
+    <linearGradient id="ringGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f9ca24"/>
+      <stop offset="50%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#9b59b6"/>
+    </linearGradient>
+    <filter id="blur12">
+      <feGaussianBlur stdDeviation="12"/>
+    </filter>
+    <filter id="blur20">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="strongGlow">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <style>
+      /* Rotating rings */
+      .ring-outer-cw {
+        transform-origin: 400px 400px;
+        animation: rotateCW 18s linear infinite;
+      }
+      .ring-outer-ccw {
+        transform-origin: 400px 400px;
+        animation: rotateCCW 22s linear infinite;
+      }
+      .ring-mid-cw {
+        transform-origin: 400px 400px;
+        animation: rotateCW 12s linear infinite;
+      }
+      .ring-mid-ccw {
+        transform-origin: 400px 400px;
+        animation: rotateCCW 16s linear infinite;
+      }
+      .ring-inner-cw {
+        transform-origin: 400px 400px;
+        animation: rotateCW 8s linear infinite;
+      }
+      .ring-inner-ccw {
+        transform-origin: 400px 400px;
+        animation: rotateCCW 10s linear infinite;
+      }
+
+      /* Hex + triangle frames */
+      .hex-frame {
+        transform-origin: 400px 400px;
+        animation: rotateCW 35s linear infinite;
+      }
+      .tri-frame-1 {
+        transform-origin: 400px 400px;
+        animation: rotateCCW 28s linear infinite;
+      }
+      .tri-frame-2 {
+        transform-origin: 400px 400px;
+        animation: rotateCW 28s linear infinite;
+      }
+
+      /* Orbital ellipses */
+      .orbit-1 {
+        transform-origin: 400px 400px;
+        animation: rotateCW 20s linear infinite;
+      }
+      .orbit-2 {
+        transform-origin: 400px 400px;
+        animation: rotateCCW 25s linear infinite;
+      }
+
+      /* Star pulse + spin */
+      .star-core {
+        transform-origin: 400px 400px;
+        animation: rotateCW 6s linear infinite, pulse 3s ease-in-out infinite;
+      }
+      .star-inner {
+        transform-origin: 400px 400px;
+        animation: rotateCCW 4s linear infinite;
+      }
+
+      /* Center dot breathe */
+      .center-glow {
+        transform-origin: 400px 400px;
+        animation: breathe 3s ease-in-out infinite;
+      }
+
+      /* Background glow pulse */
+      .glow-blob-1 {
+        animation: blobPulse1 6s ease-in-out infinite;
+      }
+      .glow-blob-2 {
+        animation: blobPulse2 8s ease-in-out infinite;
+      }
+      .glow-blob-3 {
+        animation: blobPulse3 5s ease-in-out infinite;
+      }
+
+      /* Orbital dots */
+      .orb-dot-1 { animation: orbitDot1 18s linear infinite; }
+      .orb-dot-2 { animation: orbitDot2 22s linear infinite; }
+      .orb-dot-3 { animation: orbitDot3 12s linear infinite; }
+      .orb-dot-4 { animation: orbitDot4 16s linear infinite; }
+
+      /* Twinkle stars */
+      .twinkle { animation: twinkle 3s ease-in-out infinite; }
+      .twinkle-slow { animation: twinkle 5s ease-in-out infinite; }
+      .twinkle-offset { animation: twinkle 4s ease-in-out 1.5s infinite; }
+
+      @keyframes rotateCW {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      @keyframes rotateCCW {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(-360deg); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.9; transform: rotate(0deg) scale(1); }
+        50%       { opacity: 1;   transform: rotate(180deg) scale(1.12); }
+      }
+      @keyframes breathe {
+        0%, 100% { opacity: 0.12; r: 60px; }
+        50%       { opacity: 0.28; r: 75px; }
+      }
+      @keyframes blobPulse1 {
+        0%, 100% { opacity: 0.5; }
+        50%       { opacity: 0.8; }
+      }
+      @keyframes blobPulse2 {
+        0%, 100% { opacity: 0.4; }
+        50%       { opacity: 0.7; }
+      }
+      @keyframes blobPulse3 {
+        0%, 100% { opacity: 0.2; }
+        50%       { opacity: 0.45; }
+      }
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.9; }
+        50%       { opacity: 0.2; }
+      }
+      @keyframes orbitDot1 {
+        from { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+        to   { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+      }
+      @keyframes orbitDot2 {
+        from { transform: rotate(180deg) translateX(200px) rotate(-180deg); }
+        to   { transform: rotate(540deg) translateX(200px) rotate(-540deg); }
+      }
+      @keyframes orbitDot3 {
+        from { transform: rotate(90deg) translateX(155px) rotate(-90deg); }
+        to   { transform: rotate(450deg) translateX(155px) rotate(-450deg); }
+      }
+      @keyframes orbitDot4 {
+        from { transform: rotate(270deg) translateX(155px) rotate(-270deg); }
+        to   { transform: rotate(630deg) translateX(155px) rotate(-630deg); }
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="800" fill="url(#bgGrad)"/>
+
+  <!-- Animated glow blobs -->
+  <ellipse cx="200" cy="300" rx="180" ry="180" fill="url(#glowPurple)" filter="url(#blur20)" class="glow-blob-1"/>
+  <ellipse cx="600" cy="500" rx="180" ry="180" fill="url(#glowCyan)" filter="url(#blur20)" class="glow-blob-2"/>
+  <ellipse cx="400" cy="400" rx="120" ry="120" fill="url(#glowGold)" filter="url(#blur20)" class="glow-blob-3"/>
+
+  <!-- Starfield with twinkle -->
+  <g>
+    <circle cx="42"  cy="78"  r="1.5" fill="white" class="twinkle"/>
+    <circle cx="130" cy="210" r="1.5" fill="white" class="twinkle-slow"/>
+    <circle cx="220" cy="50"  r="1"   fill="white" class="twinkle-offset"/>
+    <circle cx="310" cy="140" r="1"   fill="white" class="twinkle"/>
+    <circle cx="450" cy="30"  r="1.5" fill="white" class="twinkle-slow"/>
+    <circle cx="560" cy="120" r="1"   fill="white" class="twinkle-offset"/>
+    <circle cx="670" cy="70"  r="1.5" fill="white" class="twinkle"/>
+    <circle cx="740" cy="200" r="1"   fill="white" class="twinkle-slow"/>
+    <circle cx="90"  cy="350" r="1"   fill="white" class="twinkle-offset"/>
+    <circle cx="170" cy="480" r="1.5" fill="white" class="twinkle"/>
+    <circle cx="60"  cy="600" r="1"   fill="white" class="twinkle-slow"/>
+    <circle cx="700" cy="350" r="1.5" fill="white" class="twinkle-offset"/>
+    <circle cx="760" cy="500" r="1"   fill="white" class="twinkle"/>
+    <circle cx="720" cy="650" r="1.5" fill="white" class="twinkle-slow"/>
+    <circle cx="640" cy="720" r="1"   fill="white" class="twinkle-offset"/>
+    <circle cx="500" cy="760" r="1.5" fill="white" class="twinkle"/>
+    <circle cx="350" cy="740" r="1"   fill="white" class="twinkle-slow"/>
+    <circle cx="200" cy="700" r="1.5" fill="white" class="twinkle-offset"/>
+    <circle cx="100" cy="720" r="1"   fill="white" class="twinkle"/>
+    <circle cx="380" cy="180" r="1.5" fill="#00e5ff" class="twinkle-slow"/>
+    <circle cx="590" cy="390" r="1.5" fill="#9b59b6" class="twinkle-offset"/>
+    <circle cx="240" cy="580" r="1.5" fill="#f9ca24" class="twinkle"/>
+  </g>
+
+  <!-- Outer orbital ellipses (rotating) -->
+  <g class="orbit-1">
+    <ellipse cx="400" cy="400" rx="320" ry="80" fill="none" stroke="url(#ringGrad1)" stroke-width="1.5" opacity="0.35" transform="rotate(-25 400 400)"/>
+    <ellipse cx="400" cy="400" rx="300" ry="70" fill="none" stroke="#00e5ff" stroke-width="0.5" opacity="0.15" transform="rotate(-25 400 400)"/>
+  </g>
+  <g class="orbit-2">
+    <ellipse cx="400" cy="400" rx="280" ry="100" fill="none" stroke="url(#ringGrad2)" stroke-width="1.5" opacity="0.3" transform="rotate(30 400 400)"/>
+  </g>
+
+  <!-- Hexagon frame rotating -->
+  <g class="hex-frame">
+    <polygon points="400,130 620,265 620,535 400,670 180,535 180,265"
+      fill="none" stroke="url(#ringGrad1)" stroke-width="1.5" opacity="0.35"/>
+    <polygon points="400,155 600,280 600,520 400,645 200,520 200,280"
+      fill="none" stroke="#9b59b6" stroke-width="0.8" opacity="0.2"/>
+  </g>
+
+  <!-- Sacred geometry triangles counter-rotating -->
+  <g class="tri-frame-1">
+    <polygon points="400,170 640,570 160,570"
+      fill="none" stroke="#00e5ff" stroke-width="1" opacity="0.3"/>
+  </g>
+  <g class="tri-frame-2">
+    <polygon points="400,630 160,230 640,230"
+      fill="none" stroke="#f9ca24" stroke-width="1" opacity="0.25"/>
+  </g>
+
+  <!-- Outer ring CW -->
+  <circle cx="400" cy="400" r="200" fill="none" stroke="url(#ringGrad1)" stroke-width="2" opacity="0.55"
+    stroke-dasharray="60 20 10 20" class="ring-outer-cw"/>
+
+  <!-- Outer ring CCW -->
+  <circle cx="400" cy="400" r="200" fill="none" stroke="#00e5ff" stroke-width="0.8" opacity="0.2"
+    class="ring-outer-ccw"/>
+
+  <!-- Mid ring CCW -->
+  <circle cx="400" cy="400" r="155" fill="none" stroke="url(#ringGrad2)" stroke-width="1.5" opacity="0.45"
+    stroke-dasharray="40 15 5 15" class="ring-mid-ccw"/>
+
+  <!-- Inner ring CW -->
+  <circle cx="400" cy="400" r="120" fill="none" stroke="#9b59b6" stroke-width="2" opacity="0.55"
+    stroke-dasharray="25 10" class="ring-inner-cw"/>
+
+  <!-- Innermost ring CCW -->
+  <circle cx="400" cy="400" r="85" fill="none" stroke="#f9ca24" stroke-width="1.5" opacity="0.45"
+    stroke-dasharray="15 8" class="ring-inner-ccw"/>
+
+  <!-- Orbiting dots (anchored to center, orbit via transform) -->
+  <g filter="url(#glow)">
+    <g style="transform-origin:400px 400px" class="orb-dot-1">
+      <circle cx="400" cy="400" r="6" fill="#00e5ff" opacity="0.95"/>
+    </g>
+    <g style="transform-origin:400px 400px" class="orb-dot-2">
+      <circle cx="400" cy="400" r="5" fill="#f9ca24" opacity="0.9"/>
+    </g>
+    <g style="transform-origin:400px 400px" class="orb-dot-3">
+      <circle cx="400" cy="400" r="5" fill="#9b59b6" opacity="0.9"/>
+    </g>
+    <g style="transform-origin:400px 400px" class="orb-dot-4">
+      <circle cx="400" cy="400" r="4" fill="#00e5ff" opacity="0.8"/>
+    </g>
+  </g>
+
+  <!-- Radial lines (faint) -->
+  <g stroke="#00e5ff" stroke-width="0.8" opacity="0.15">
+    <line x1="400" y1="200" x2="400" y2="50"/>
+    <line x1="400" y1="600" x2="400" y2="750"/>
+    <line x1="200" y1="400" x2="50" y2="400"/>
+    <line x1="600" y1="400" x2="750" y2="400"/>
+    <line x1="259" y1="259" x2="150" y2="150"/>
+    <line x1="541" y1="259" x2="650" y2="150"/>
+    <line x1="259" y1="541" x2="150" y2="650"/>
+    <line x1="541" y1="541" x2="650" y2="650"/>
+  </g>
+
+  <!-- Core breathing glow -->
+  <circle cx="400" cy="400" r="60" fill="#9b59b6" filter="url(#blur12)" class="center-glow"/>
+  <circle cx="400" cy="400" r="40" fill="#00e5ff" opacity="0.15" filter="url(#blur12)" class="center-glow"/>
+
+  <!-- Central spinning star -->
+  <g class="star-core" filter="url(#strongGlow)">
+    <polygon points="400,350 408,380 435,365 420,392 450,400 420,408 435,435 408,420 400,450 392,420 365,435 380,408 350,400 380,392 365,365 392,380"
+      fill="url(#ringGrad1)" opacity="0.95"/>
+  </g>
+  <g class="star-inner" filter="url(#glow)">
+    <polygon points="400,362 404,382 419,373 412,390 430,400 412,410 419,427 404,418 400,438 396,418 381,427 388,410 370,400 388,390 381,373 396,382"
+      fill="white" opacity="0.9"/>
+  </g>
+
+  <!-- Center dot -->
+  <circle cx="400" cy="400" r="10" fill="white" opacity="1" filter="url(#glow)"/>
+  <circle cx="400" cy="400" r="6"  fill="#00e5ff" opacity="1"/>
+
+  <!-- Corner accents -->
+  <g stroke="#00e5ff" stroke-width="1.5" fill="none" opacity="0.5">
+    <path d="M 60,60 L 60,90 L 90,90"/>
+    <path d="M 740,60 L 740,90 L 710,90"/>
+    <path d="M 60,740 L 60,710 L 90,710"/>
+    <path d="M 740,740 L 740,710 L 710,710"/>
+  </g>
+
+  <!-- Label -->
+  <text x="400" y="775" text-anchor="middle"
+    font-family="'Courier New', monospace" font-size="11"
+    fill="#00e5ff" opacity="0.5" letter-spacing="6">
+    COSMIC GEOMETRY
+  </text>
+</svg>
