@@ -14,7 +14,7 @@
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-PROJECT_DIR="$(pwd)"
+PROJECT_DIR="$(pwd -P)"
 BIND_HOST="127.0.0.1"
 URL_HOST=""
 FOREGROUND="false"
@@ -22,7 +22,7 @@ FORCE_BACKGROUND="false"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --project-dir) PROJECT_DIR="$2"; shift 2 ;;
+    --project-dir) PROJECT_DIR="$(cd "$2" && pwd)"; shift 2 ;;
     --host)        BIND_HOST="$2"; shift 2 ;;
     --url-host)    URL_HOST="$2"; shift 2 ;;
     --foreground|--no-daemon) FOREGROUND="true"; shift ;;
