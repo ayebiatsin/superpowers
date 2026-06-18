@@ -171,10 +171,9 @@ function handleRequest(req, res) {
     const name = path.basename(url.pathname.slice(6));
     if (!HANDOFF_FILES.includes(name)) { res.writeHead(403); res.end('Forbidden'); return; }
     const fp = path.join(PROJECT_DIR, name);
-    try {
-      res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end(fs.readFileSync(fp, 'utf-8'));
-    } catch { res.writeHead(404); res.end('File not found'); }
+    if (!fs.existsSync(fp)) { res.writeHead(404); res.end('File not found'); return; }
+    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end(fs.readFileSync(fp, 'utf-8'));
 
   } else if (req.method === 'POST' && url.pathname === '/action') {
     let body = '';
