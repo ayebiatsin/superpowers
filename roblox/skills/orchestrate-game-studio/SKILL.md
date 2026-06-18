@@ -116,6 +116,32 @@ The monetization agent's `devex-report.md` goes to the design agent as a separat
 | `devex-report.md` | Monetization | Design | project root |
 | `spec-question.md` | Build | Design | project root |
 
+## Running the A2UI Dashboard
+
+Start the dashboard before running the pipeline so your human partner can monitor progress in real time:
+
+```bash
+# From the project root where handoff files will live
+bash /path/to/superpowers/roblox/ui/start-ui.sh --project-dir .
+# → prints JSON with the URL, e.g. http://localhost:54321
+```
+
+The dashboard auto-refreshes when any handoff file changes. Your human partner can:
+- Watch each phase transition live
+- Read handoff files without leaving the browser
+- Record gate decisions (approve / reject with feedback) that are written to `.superpowers/studio/gate-status.json`
+
+Read `gate-status.json` after any phase gate to check whether your human partner has weighed in:
+```bash
+cat .superpowers/studio/gate-status.json
+# {"decision": "approve", "phase": "build", "feedback": null, "timestamp": "..."}
+```
+
+Stop when done:
+```bash
+bash /path/to/superpowers/roblox/ui/stop-ui.sh --project-dir .
+```
+
 ## What You Do Between Agent Calls
 
 You are the coordinator. Between agent calls, you:

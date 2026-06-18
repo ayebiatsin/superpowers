@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Game Studio Orchestration</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+
+:root {
+  --bg: #f5f5f7; --surface: #fff; --surface2: #e5e5e7;
+  --border: #d1d1d6; --text: #1d1d1f; --muted: #86868b; --faint: #aeaeb2;
+  --accent: #0071e3; --accent-h: #0077ed;
+  --green: #34c759; --orange: #ff9f0a; --red: #ff3b30; --purple: #af52de;
+  --phase-done: #34c759; --phase-active: #0071e3; --phase-wait: #aeaeb2; --phase-blocked: #ff3b30;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1d1d1f; --surface: #2d2d2f; --surface2: #3d3d3f;
+    --border: #424245; --text: #f5f5f7; --muted: #86868b; --faint: #636366;
+    --accent: #0a84ff; --accent-h: #409cff;
+    --green: #30d158; --orange: #ffd60a; --red: #ff453a; --purple: #bf5af2;
+  }
+}
+
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; line-height: 1.5; font-size: 14px; }
+
+/* ── HEADER ── */
+.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.5rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.header h1 { font-size: 0.85rem; font-weight: 600; letter-spacing: -0.01em; }
+.conn { font-size: 0.7rem; color: var(--muted); display: flex; align-items: center; gap: 0.35rem; }
+.conn::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+.conn.live::before { background: var(--green); }
+
+/* ── PIPELINE STEPPER ── */
+.stepper { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0; flex-shrink: 0; overflow-x: auto; }
+.step { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+.step-dot { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--phase-wait); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--phase-wait); flex-shrink: 0; transition: all 0.2s; }
+.step.done .step-dot { border-color: var(--phase-done); color: var(--phase-done); background: color-mix(in srgb, var(--phase-done) 12%, transparent); }
+.step.active .step-dot { border-color: var(--phase-active); color: var(--phase-active); background: color-mix(in srgb, var(--phase-active) 12%, transparent); }
+.step.blocked .step-dot { border-color: var(--phase-blocked); color: var(--phase-blocked); background: color-mix(in srgb, var(--phase-blocked) 12%, transparent); }
+.step-label { font-size: 0.75rem; font-weight: 500; color: var(--faint); white-space: nowrap; }
+.step.done .step-label { color: var(--phase-done); }
+.step.active .step-label { color: var(--phase-active); font-weight: 600; }
+.step.blocked .step-label { color: var(--phase-blocked); }
+.step-connector { width: 32px; height: 2px; background: var(--border); flex-shrink: 0; margin: 0 0.25rem; }
+.step-connector.done { background: var(--phase-done); }
+
+/* ── MAIN LAYOUT ── */
+.main { flex: 1; display: grid; grid-template-columns: 220px 1fr; overflow: hidden; min-height: 0; }
+
+/* ── FILE LIST ── */
+.files { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.files-title { padding: 0.6rem 0.9rem; font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.file-list { overflow-y: auto; flex: 1; }
+.file-item { padding: 0.55rem 0.9rem; display: flex; align-items: center; gap: 0.6rem; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--border); }
+.file-item:hover { background: var(--surface2); }
+.file-item.selected { background: color-mix(in srgb, var(--accent) 10%, transparent); border-left: 2px solid var(--accent); padding-left: calc(0.9rem - 2px); }
+.file-item.absent { opacity: 0.4; cursor: default; }
+.file-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.file-dot.present { background: var(--green); }
+.file-dot.absent { background: var(--border); border: 1px solid var(--faint); background: none; }
+.file-name { font-size: 0.8rem; font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-item.absent .file-name { color: var(--muted); }
+.file-mtime { font-size: 0.65rem; color: var(--faint); margin-top: 0.1rem; }
+
+/* ── CONTENT VIEWER ── */
+.viewer { display: flex; flex-direction: column; overflow: hidden; }
+.viewer-header { padding: 0.6rem 1rem; font-size: 0.75rem; color: var(--muted); border-bottom: 1px solid var(--border); flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; }
+.viewer-header strong { color: var(--text); font-size: 0.85rem; }
+.viewer-body { flex: 1; overflow-y: auto; padding: 1.25rem 1.5rem; }
+.viewer-body.empty { display: flex; align-items: center; justify-content: center; color: var(--faint); font-size: 0.85rem; }
+
+/* ── MARKDOWN RENDER ── */
+.md h1 { font-size: 1.4rem; font-weight: 700; margin: 0 0 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.35rem; }
+.md h2 { font-size: 1.1rem; font-weight: 600; margin: 1.25rem 0 0.4rem; }
+.md h3 { font-size: 0.95rem; font-weight: 600; margin: 1rem 0 0.3rem; color: var(--muted); }
+.md p { margin: 0.4rem 0; color: var(--text); }
+.md ul, .md ol { margin: 0.4rem 0 0.4rem 1.4rem; }
+.md li { margin: 0.2rem 0; }
+.md table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; font-size: 0.82rem; }
+.md td, .md th { border: 1px solid var(--border); padding: 0.4rem 0.65rem; text-align: left; }
+.md th { background: var(--surface2); font-weight: 600; }
+.md pre { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem; overflow-x: auto; margin: 0.75rem 0; font-size: 0.8rem; font-family: ui-monospace, monospace; }
+.md code { background: var(--surface2); border-radius: 3px; padding: 0.1em 0.3em; font-family: ui-monospace, monospace; font-size: 0.85em; }
+.md pre code { background: none; padding: 0; }
+.md strong { font-weight: 700; }
+.md em { font-style: italic; }
+.md hr { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+.badge { display: inline-block; padding: 0.15em 0.5em; border-radius: 4px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.badge.critical { background: color-mix(in srgb, var(--red) 15%, transparent); color: var(--red); }
+.badge.important { background: color-mix(in srgb, var(--orange) 15%, transparent); color: var(--orange); }
+.badge.minor { background: color-mix(in srgb, var(--muted) 15%, transparent); color: var(--muted); }
+.badge.pass { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+.badge.fail { background: color-mix(in srgb, var(--red) 15%, transparent); color: var(--red); }
+
+/* ── ACTION PANEL ── */
+.action-panel { background: var(--surface); border-top: 1px solid var(--border); padding: 0.75rem 1.25rem; flex-shrink: 0; display: flex; align-items: flex-start; gap: 1rem; }
+.action-status { flex: 1; }
+.action-status .phase-label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.25rem; }
+.action-status .description { font-size: 0.82rem; color: var(--text); }
+.action-controls { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+.btn { padding: 0.4rem 0.9rem; border-radius: 7px; border: none; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.btn-approve { background: var(--accent); color: #fff; }
+.btn-approve:hover { background: var(--accent-h); }
+.btn-reject { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-reject:hover { border-color: var(--red); color: var(--red); }
+.btn-override { background: var(--surface2); color: var(--orange); border: 1px solid var(--border); font-size: 0.75rem; }
+.btn-override:hover { border-color: var(--orange); }
+.feedback-input { padding: 0.35rem 0.7rem; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-size: 0.8rem; width: 220px; }
+.feedback-input:focus { outline: none; border-color: var(--accent); }
+.gate-confirmed { font-size: 0.78rem; padding: 0.3rem 0.75rem; border-radius: 6px; background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); border: 1px solid color-mix(in srgb, var(--green) 30%, transparent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Game Studio Orchestration</h1>
+  <div class="conn" id="conn-indicator">Connecting</div>
+</div>
+
+<div class="stepper" id="stepper"></div>
+
+<div class="main">
+  <div class="files">
+    <div class="files-title">Handoff Files</div>
+    <div class="file-list" id="file-list"></div>
+  </div>
+  <div class="viewer">
+    <div class="viewer-header" id="viewer-header">
+      <span>Select a file to view</span>
+    </div>
+    <div class="viewer-body empty" id="viewer-body">
+      <span>No file selected</span>
+    </div>
+  </div>
+</div>
+
+<div class="action-panel" id="action-panel">
+  <div class="action-status">
+    <div class="phase-label" id="phase-label">Connecting...</div>
+    <div class="description" id="phase-description"></div>
+  </div>
+  <div class="action-controls" id="action-controls"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── State ──
+  let state = null;
+  let selectedFile = null;
+  let ws = null;
+  const PHASES = ['design', 'build', 'qa', 'balance-loop', 'ready'];
+  const PHASE_LABELS = { design: 'Design', build: 'Build', qa: 'QA', 'balance-loop': 'Balance', ready: 'Release', blocked: 'Blocked' };
+  const FILE_ORDER = ['systems.md', 'feature-spec.md', 'build-complete.md', 'qa-report.md', 'devex-report.md', 'spec-question.md'];
+  const FILE_PHASE = { 'feature-spec.md': 'design', 'build-complete.md': 'build', 'qa-report.md': 'qa', 'devex-report.md': 'monetization', 'spec-question.md': 'blocked' };
+
+  // ── WebSocket ──
+  function connect() {
+    ws = new WebSocket('ws://' + window.location.host);
+    ws.onopen = () => {
+      document.getElementById('conn-indicator').className = 'conn live';
+      document.getElementById('conn-indicator').textContent = 'Live';
+      fetchState();
+    };
+    ws.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+      if (data.type === 'state-changed') fetchState();
+    };
+    ws.onclose = () => {
+      document.getElementById('conn-indicator').className = 'conn';
+      document.getElementById('conn-indicator').textContent = 'Reconnecting';
+      setTimeout(connect, 1500);
+    };
+  }
+
+  // ── Fetch state from server ──
+  async function fetchState() {
+    try {
+      const res = await fetch('/state');
+      state = await res.json();
+      renderAll();
+    } catch (e) {
+      console.error('Failed to fetch state', e);
+    }
+  }
+
+  // ── Render everything ──
+  function renderAll() {
+    if (!state) return;
+    renderStepper();
+    renderFileList();
+    renderActionPanel();
+    if (selectedFile) loadFile(selectedFile);
+  }
+
+  // ── Stepper ──
+  function renderStepper() {
+    const phase = state.phase;
+    const activeIdx = PHASES.indexOf(phase === 'blocked' ? 'build' : phase);
+    const el = document.getElementById('stepper');
+    let html = '';
+    PHASES.forEach((p, i) => {
+      const label = PHASE_LABELS[p];
+      let cls = 'wait';
+      if (phase === 'blocked' && p === 'build') cls = 'blocked';
+      else if (i < activeIdx) cls = 'done';
+      else if (i === activeIdx) cls = 'active';
+      const num = cls === 'done' ? '✓' : (i + 1);
+      html += `<div class="step ${cls}"><div class="step-dot">${num}</div><div class="step-label">${label}</div></div>`;
+      if (i < PHASES.length - 1) {
+        html += `<div class="step-connector${i < activeIdx ? ' done' : ''}"></div>`;
+      }
+    });
+    el.innerHTML = html;
+  }
+
+  // ── File List ──
+  function renderFileList() {
+    const el = document.getElementById('file-list');
+    let html = '';
+    FILE_ORDER.forEach(name => {
+      const info = state.files[name];
+      const present = !!info;
+      const sel = selectedFile === name ? ' selected' : '';
+      const absCls = present ? '' : ' absent';
+      const dotCls = present ? 'present' : 'absent';
+      const mtime = present ? formatTime(info.mtime) : '';
+      html += `<div class="file-item${absCls}${sel}" data-file="${name}" onclick="window._selectFile('${name}', ${present})">`;
+      html += `<div class="file-dot ${dotCls}"></div>`;
+      html += `<div><div class="file-name">${name}</div>${mtime ? `<div class="file-mtime">${mtime}</div>` : ''}</div>`;
+      html += `</div>`;
+    });
+    el.innerHTML = html;
+  }
+
+  window._selectFile = function (name, present) {
+    if (!present) return;
+    selectedFile = name;
+    renderFileList();
+    loadFile(name);
+  };
+
+  async function loadFile(name) {
+    const info = state && state.files[name];
+    if (!info) return;
+    document.getElementById('viewer-header').innerHTML =
+      `<strong>${name}</strong><span>${formatTime(info.mtime)} · ${formatSize(info.size)}</span>`;
+    try {
+      const res = await fetch('/file/' + name);
+      const text = await res.text();
+      const body = document.getElementById('viewer-body');
+      body.className = 'viewer-body md';
+      body.innerHTML = renderMarkdown(text);
+    } catch {
+      document.getElementById('viewer-body').innerHTML = '<em>Failed to load file</em>';
+    }
+  }
+
+  // ── Action Panel ──
+  function renderActionPanel() {
+    const phase = state.phase;
+    document.getElementById('phase-label').textContent = PHASE_LABELS[phase] || phase;
+    document.getElementById('phase-description').textContent = state.description || '';
+
+    const gate = state.gateStatus;
+    const controls = document.getElementById('action-controls');
+
+    if (gate && isRecent(gate.timestamp)) {
+      const label = gate.decision === 'approve' ? 'Approved' : 'Rejected';
+      const color = gate.decision === 'approve' ? 'green' : 'red';
+      controls.innerHTML = `<span class="gate-confirmed">${label} by you</span>`;
+      return;
+    }
+
+    if (phase === 'balance-loop') {
+      const f = state.findings || {};
+      controls.innerHTML = `
+        <input class="feedback-input" id="fb-input" placeholder="Optional feedback for design agent..." />
+        <button class="btn btn-reject" onclick="window._action('reject', '${phase}')">Back to Design</button>
+        <button class="btn btn-override" onclick="window._action('override', '${phase}')">Force release</button>
+      `;
+    } else if (phase === 'ready') {
+      controls.innerHTML = `
+        <input class="feedback-input" id="fb-input" placeholder="Optional notes..." />
+        <button class="btn btn-reject" onclick="window._action('reject', '${phase}')">Request changes</button>
+        <button class="btn btn-approve" onclick="window._action('approve', '${phase}')">Approve release</button>
+      `;
+    } else if (phase === 'blocked') {
+      controls.innerHTML = `<button class="btn btn-approve" onclick="window._action('route-to-design', '${phase}')">Route to Design agent</button>`;
+    } else if (phase === 'build') {
+      controls.innerHTML = `
+        <input class="feedback-input" id="fb-input" placeholder="Feedback if rejecting spec..." />
+        <button class="btn btn-reject" onclick="window._action('reject', '${phase}')">Reject spec</button>
+        <button class="btn btn-approve" onclick="window._action('approve', '${phase}')">Approve spec</button>
+      `;
+    } else {
+      controls.innerHTML = '';
+    }
+  }
+
+  window._action = async function (decision, phase) {
+    const fbEl = document.getElementById('fb-input');
+    const feedback = fbEl ? fbEl.value.trim() : '';
+    try {
+      await fetch('/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decision, phase, feedback }),
+      });
+      fetchState();
+    } catch (e) {
+      alert('Failed to send action: ' + e.message);
+    }
+  };
+
+  // ── Markdown renderer ──
+  function escHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function inline(s) {
+    let t = escHtml(s);
+    t = t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    t = t.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Highlight PASS/FAIL/Critical/Important/Minor badges
+    t = t.replace(/\bCritical\b/g, '<span class="badge critical">Critical</span>');
+    t = t.replace(/\bImportant\b/g, '<span class="badge important">Important</span>');
+    t = t.replace(/\bMinor\b/g, '<span class="badge minor">Minor</span>');
+    t = t.replace(/\bPASS\b/g, '<span class="badge pass">PASS</span>');
+    t = t.replace(/\bFAIL\b/g, '<span class="badge fail">FAIL</span>');
+    return t;
+  }
+
+  function renderMarkdown(text) {
+    const lines = text.split('\n');
+    let html = '';
+    let inCode = false, inTable = false, inUl = false, inOl = false;
+
+    const closeList = () => {
+      if (inUl) { html += '</ul>'; inUl = false; }
+      if (inOl) { html += '</ol>'; inOl = false; }
+    };
+    const closeTable = () => { if (inTable) { html += '</tbody></table>'; inTable = false; } };
+
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i];
+      const line = raw.trimEnd();
+
+      if (line.startsWith('```')) {
+        if (inCode) { html += '</code></pre>'; inCode = false; }
+        else { closeList(); closeTable(); html += '<pre><code>'; inCode = true; }
+        continue;
+      }
+      if (inCode) { html += escHtml(raw) + '\n'; continue; }
+
+      // Table row
+      if (line.startsWith('|') && line.endsWith('|')) {
+        const cells = line.slice(1, -1).split('|').map(c => c.trim());
+        if (cells.every(c => /^[-: ]+$/.test(c))) continue; // separator row
+        closeList();
+        if (!inTable) { html += '<table><tbody>'; inTable = true; }
+        html += '<tr>' + cells.map(c => `<td>${inline(c)}</td>`).join('') + '</tr>';
+        continue;
+      }
+      closeTable();
+
+      // Headings
+      const hm = line.match(/^(#{1,3}) (.*)/);
+      if (hm) { closeList(); html += `<h${hm[1].length}>${inline(hm[2])}</h${hm[1].length}>`; continue; }
+
+      // HR
+      if (/^---+$/.test(line.trim())) { closeList(); html += '<hr>'; continue; }
+
+      // Unordered list
+      const ulm = line.match(/^[-*] (.*)/);
+      if (ulm) {
+        closeTable();
+        if (inOl) { html += '</ol>'; inOl = false; }
+        if (!inUl) { html += '<ul>'; inUl = true; }
+        html += `<li>${inline(ulm[1])}</li>`; continue;
+      }
+
+      // Ordered list
+      const olm = line.match(/^\d+\. (.*)/);
+      if (olm) {
+        closeTable();
+        if (inUl) { html += '</ul>'; inUl = false; }
+        if (!inOl) { html += '<ol>'; inOl = true; }
+        html += `<li>${inline(olm[1])}</li>`; continue;
+      }
+
+      // Blank line
+      if (line.trim() === '') {
+        closeList(); closeTable();
+        html += '<br>'; continue;
+      }
+
+      closeList();
+      html += `<p>${inline(line)}</p>`;
+    }
+    if (inCode) html += '</code></pre>';
+    closeList(); closeTable();
+    return html;
+  }
+
+  // ── Helpers ──
+  function formatTime(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    const now = new Date();
+    const diff = Math.floor((now - d) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return d.toLocaleDateString();
+  }
+
+  function formatSize(bytes) {
+    if (!bytes) return '';
+    if (bytes < 1024) return `${bytes}B`;
+    return `${(bytes / 1024).toFixed(1)}KB`;
+  }
+
+  function isRecent(ts) {
+    if (!ts) return false;
+    return Date.now() - new Date(ts).getTime() < 60 * 1000;
+  }
+
+  // ── Boot ──
+  connect();
+})();
+</script>
+</body>
+</html>
